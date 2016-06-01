@@ -1,5 +1,8 @@
+*.settings
+*.idea
 *.class
 
+*/target
 # Windows shortcuts
 *.lnk
 .classpath

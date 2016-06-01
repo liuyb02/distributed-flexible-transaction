@@ -1,1 +1,0 @@
-transaction=com.distributed.transaction.agent.dubbo.filter.TransactionFilter
