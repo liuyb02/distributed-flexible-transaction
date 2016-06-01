@@ -48,8 +48,8 @@ public class TransactionManagerServiceImpl implements TransactionManagerService 
 		boolean isParticipantRollbackHasOccurError = false;
 		for(Participant participant : transaction.getParticipantList()){
 			asyncMongoTransactionWriteAheadLogComponent.writeAheadLog(participant, TransactionWriteAheadLogType.LOG_PARTICIPANT_ROLLBACK_BEFORE_ACTIVE_ROLLBACK);
-			boolean weatherRollbackSuccess = ParticipantRollbackUtil.rollback(participant);
-			if(weatherRollbackSuccess){
+			boolean isRollbackSuccess = ParticipantRollbackUtil.rollback(participant);
+			if(isRollbackSuccess){
 				participant.setParticipantState(ParticipantState.PARTICIPANT_ROLLBACK_SUCCESS);
 			} else {
 				participant.setParticipantState(ParticipantState.PARTICIPANT_ROLLBACK_FAIL);
