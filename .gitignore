@@ -1,6 +1,7 @@
 *.settings
 *.idea
 *.class
+*.iml
 
 */target
 # Windows shortcuts

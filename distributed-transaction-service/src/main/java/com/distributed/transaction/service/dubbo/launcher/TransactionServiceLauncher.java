@@ -27,7 +27,7 @@ public class TransactionServiceLauncher {
 			
 			
 			
-			//拉起spring服务主配置文件和db-service module中的以spring-开头的mybatis配置文件:spring-dbservice-mybatis.xml
+
 			final ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(
 					"classpath*:distributed-transaction-service.xml");
 			
@@ -53,7 +53,7 @@ public class TransactionServiceLauncher {
 				});
 			}
 			
-			//拉起服务
+
 			context.start();
 			logger.info("distributed transaction manager Started!  take " + (System.currentTimeMillis() - t) + " ms");
 		} catch (RuntimeException e) {

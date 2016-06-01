@@ -65,7 +65,14 @@
   	<module>distributed-transaction-common</module>
   	<module>distributed-transaction-core</module>
   	<module>distributed-transaction-agent</module>
-  	<module>distributed-transaction-test-dubboservice1</module>
-  	<module>distributed-transaction-test-dubboservice2</module>
   </modules>
+	<profiles>
+		<profile>
+			<id>test</id>
+			<modules>
+				<module>distributed-transaction-test-dubboservice1</module>
+				<module>distributed-transaction-test-dubboservice2</module>
+			</modules>
+		</profile>
+	</profiles>
 </project>

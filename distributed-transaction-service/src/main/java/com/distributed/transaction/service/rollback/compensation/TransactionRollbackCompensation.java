@@ -43,8 +43,8 @@ public class TransactionRollbackCompensation {
 					for(Participant participant : rollbackTransaction.getParticipantList()){
 						if(participant != null && (participant.getParticipantState() == ParticipantState.PARTICIPANT_ROLLBACK_FAIL)){
 							asyncMongoTransactionWriteAheadLogComponent.writeAheadLog(participant, TransactionWriteAheadLogType.LOG_PARTICIPANT_ROLLBACK_BY_ROLLBACK_COMPENSATION_JOB);
-							boolean weatherRollbackSuccess = ParticipantRollbackUtil.rollback(participant);
-							if(weatherRollbackSuccess){
+							boolean isRollbackSuccess = ParticipantRollbackUtil.rollback(participant);
+							if(isRollbackSuccess){
 								participant.setParticipantState(ParticipantState.PARTICIPANT_ROLLBACK_SUCCESS);
 							} else {
 								participant.setParticipantState(ParticipantState.PARTICIPANT_ROLLBACK_FAIL);

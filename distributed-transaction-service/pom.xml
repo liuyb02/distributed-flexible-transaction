@@ -102,18 +102,5 @@
 		<scope>test</scope>
 	</dependency>
 
-
-	<dependency>
-		<groupId>com.base.ice</groupId>
-		<artifactId>distributed-transaction-test-dubboservice1-api</artifactId>
-		<version>${project.version}</version>
-	</dependency>
-
-	<dependency>
-		<groupId>com.base.ice</groupId>
-		<artifactId>distributed-transaction-test-dubboservice2-api</artifactId>
-		<version>${project.version}</version>
-	</dependency>
-
 </dependencies>
 </project>
