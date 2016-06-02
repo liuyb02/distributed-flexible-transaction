@@ -1,5 +1,6 @@
 package com.distributed.transaction.service.dubbo.impl;
 
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,8 +14,8 @@ import com.distributed.transaction.api.TransactionWriteAheadLogType;
 import com.distributed.transaction.api.service.TransactionManagerService;
 import com.distributed.transaction.common.util.AssertUtil;
 import com.distributed.transaction.core.repository.DistributedTransactionRepository;
-import com.distributed.transaction.core.wal.log.AsyncMongoTransactionWriteAheadLogComponent;
 import com.distributed.transaction.service.dubbo.util.ParticipantRollbackUtil;
+import com.distributed.transaction.core.wal.log.AbstractAsyncTransactionWriteAheadLogComponent;
 
 /**
  * 
@@ -28,16 +29,16 @@ public class TransactionManagerServiceImpl implements TransactionManagerService 
 	private static final Logger logger = LoggerFactory.getLogger(TransactionManagerServiceImpl.class);
 	
 	@Autowired
-	private DistributedTransactionRepository mongoDistributedTransactionRepository;
+	private DistributedTransactionRepository distributedTransactionRepository;
 	
 	@Autowired
-	private AsyncMongoTransactionWriteAheadLogComponent asyncMongoTransactionWriteAheadLogComponent;
+	private AbstractAsyncTransactionWriteAheadLogComponent asyncTransactionWriteAheadLogComponent;
 	
 	@Override
 	public Transaction beginTransaction() {
 		logger.info("start executing beginTransaction.....");
 		Transaction transaction = new Transaction();
-		mongoDistributedTransactionRepository.saveTransaction(transaction);
+		distributedTransactionRepository.saveTransaction(transaction);
 		return transaction;
 	}
 
@@ -47,7 +48,7 @@ public class TransactionManagerServiceImpl implements TransactionManagerService 
 		logger.info("start executing rollback....,transactionUUID:{}",transaction.getTransactionGlobalId().getGlobalTransactionUUID());
 		boolean isParticipantRollbackHasOccurError = false;
 		for(Participant participant : transaction.getParticipantList()){
-			asyncMongoTransactionWriteAheadLogComponent.writeAheadLog(participant, TransactionWriteAheadLogType.LOG_PARTICIPANT_ROLLBACK_BEFORE_ACTIVE_ROLLBACK);
+			asyncTransactionWriteAheadLogComponent.writeAheadLog(participant, TransactionWriteAheadLogType.LOG_PARTICIPANT_ROLLBACK_BEFORE_ACTIVE_ROLLBACK);
 			boolean isRollbackSuccess = ParticipantRollbackUtil.rollback(participant);
 			if(isRollbackSuccess){
 				participant.setParticipantState(ParticipantState.PARTICIPANT_ROLLBACK_SUCCESS);
@@ -62,7 +63,7 @@ public class TransactionManagerServiceImpl implements TransactionManagerService 
 			transaction.setTransactionState(TransactionState.ROLLBACK_SUCCESS);
 		}
 		
-		mongoDistributedTransactionRepository.updateTransaction(transaction);
+		distributedTransactionRepository.updateTransaction(transaction);
 		
 	}
 
@@ -70,16 +71,16 @@ public class TransactionManagerServiceImpl implements TransactionManagerService 
 	public void enrollParticipant(Transaction transaction, Participant participant) {
 		AssertUtil.notNull(transaction);
 		AssertUtil.notNull(participant);
-		asyncMongoTransactionWriteAheadLogComponent.writeAheadLog(participant, TransactionWriteAheadLogType.LOG_PARTICIPANT_ENROLL_BEFORE_COMMIT);
+		asyncTransactionWriteAheadLogComponent.writeAheadLog(participant, TransactionWriteAheadLogType.LOG_PARTICIPANT_ENROLL_BEFORE_COMMIT);
 		transaction.enrollParticipantToTransaction(participant);
-		mongoDistributedTransactionRepository.updateTransaction(transaction);
+		distributedTransactionRepository.updateTransaction(transaction);
 
 	}
 
 	@Override
 	public Transaction getTransactionByTransactionUUID(String transactionUUID) {
 		AssertUtil.notNull(transactionUUID);
-		return mongoDistributedTransactionRepository.getTransaction(transactionUUID);
+		return distributedTransactionRepository.getTransaction(transactionUUID);
 	}
 
 }
